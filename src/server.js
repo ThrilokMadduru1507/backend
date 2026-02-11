@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+
 const authRoutes = require('./routes/authRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const hierarchyRoutes = require('./routes/hierarchyRoutes');
@@ -10,10 +11,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: process.env.CLIENT_URL || '*',
   credentials: true
 }));
-app.use(express.json({ limit: '10mb' })); // Increased limit for diagram data
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Request logging
@@ -30,8 +31,8 @@ app.use('/api/diagrams', diagramRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     message: 'Structra API is running',
     timestamp: new Date().toISOString()
   });
@@ -54,17 +55,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`
-╔═══════════════════════════════════════╗
-║   🚀 Structra API Server Running     ║
-║   Port: ${PORT}                         ║
-║   Environment: ${process.env.NODE_ENV}       ║
-║   Time: ${new Date().toLocaleString()}    ║
-╚═══════════════════════════════════════╝
-  `);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Structra API running on port ${PORT}`);
 });
 
 module.exports = app;
