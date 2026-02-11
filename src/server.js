@@ -13,7 +13,9 @@ const app = express();
 // Initialize database tables on startup
 const initPool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 initPool.query(`
