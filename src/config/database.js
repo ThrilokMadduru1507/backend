@@ -3,14 +3,20 @@ require('dotenv').config();
 
 console.log('🔍 Database configuration:');
 console.log({
-  DATABASE_URL: process.env.DATABASE_URL ? '✅ SET' : '❌ NOT SET'
+  host: process.env.PGHOST || 'NOT SET',
+  port: process.env.PGPORT || 'NOT SET',
+  user: process.env.PGUSER || 'NOT SET',
+  database: process.env.PGDATABASE || 'NOT SET',
+  password: process.env.PGPASSWORD ? '✅ SET' : '❌ NOT SET'
 });
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  host: process.env.PGHOST,
+  port: process.env.PGPORT,
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  database: process.env.PGDATABASE,
+  ssl: false  // No SSL needed for internal Railway connections
 });
 
 // Test connection on startup
