@@ -11,13 +11,11 @@ const diagramRoutes = require('./routes/diagramRoutes');
 const app = express();
 
 // Initialize database tables on startup
-const initPool = new Pool({
-  host: process.env.PGHOST,
-  port: process.env.PGPORT,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  ssl: false
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 initPool.query(`
