@@ -1,0 +1,71 @@
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+const authRoutes = require('./routes/authRoutes');
+const clientRoutes = require('./routes/clientRoutes');
+const hierarchyRoutes = require('./routes/hierarchyRoutes');
+const diagramRoutes = require('./routes/diagramRoutes');
+
+const app = express();
+
+// Middleware
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+}));
+app.use(express.json({ limit: '10mb' })); // Increased limit for diagram data
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Request logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/clients', clientRoutes);
+app.use('/api/hierarchy', hierarchyRoutes);
+app.use('/api/diagrams', diagramRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Structra API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error'
+  });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`
+╔═══════════════════════════════════════╗
+║   🚀 Structra API Server Running     ║
+║   Port: ${PORT}                         ║
+║   Environment: ${process.env.NODE_ENV}       ║
+║   Time: ${new Date().toLocaleString()}    ║
+╚═══════════════════════════════════════╝
+  `);
+});
+
+module.exports = app;
